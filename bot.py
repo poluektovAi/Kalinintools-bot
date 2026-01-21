@@ -15,11 +15,10 @@ EMAIL_LOGIN = os.getenv("EMAIL_LOGIN")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 EMAIL_TO = os.getenv("EMAIL_TO")
 
-GOOGLE_SHEET_URL = "https://docs.google.com/your_table_here"
+GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1F5a_kQVLDAI8aTGX8Bh8aFE8G6jThAXf/edit?usp=sharing&ouid=100603441846947403910&rtpof=true&sd=true"
 
 PROMO_IMAGES = [
-    "promo1.jpg",
-    "promo2.jpg"
+    "promo1.jpg"
 ]
 
 user_states = {}
@@ -60,22 +59,29 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.message.chat_id
 
-    if user_states.get(chat_id) == "waiting_text":
-        text = update.message.text or "Файл без текста"
-        files = []
+    if user_states.get(chat_id) != "waiting_text":
+        return
 
-        if update.message.document:
-            file = await update.message.document.get_file()
-            files.append((file, update.message.document.file_name))
+    text = update.message.text or update.message.caption or "Без текста"
+    files = []
 
-        if update.message.photo:
-            file = await update.message.photo[-1].get_file()
-            files.append((file, "photo.jpg"))
+    if update.message.photo:
+        file = await update.message.photo[-1].get_file()
+        files.append((file, "photo.jpg"))
 
-        send_email(text, files)
-        user_states.pop(chat_id)
+    if update.message.document:
+        file = await update.message.document.get_file()
+        files.append((file, update.message.document.file_name))
 
-        await update.message.reply_text("✅ Заявка отправлена!")
+    # ВРЕМЕННО: лог вместо почты
+    print("ЗАЯВКА ПОЛУЧЕНА")
+    print(text)
+    print(f"Файлов: {len(files)}")
+
+    user_states.pop(chat_id)
+
+    await update.message.reply_text("✅ Заявка отправлена!")
+
 
 def send_email(text, files):
     msg = EmailMessage()
