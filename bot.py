@@ -9,6 +9,17 @@ from telegram.ext import (
     CallbackQueryHandler, MessageHandler,
     ContextTypes, filters
 )
+//сервер для наёба рендера
+from flask import Flask
+import threading
+
+app = Flask(__name__)
+
+def run_web():
+    app.run(host="0.0.0.0", port=10000)
+
+threading.Thread(target=run_web).start()
+//
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 EMAIL_LOGIN = os.getenv("EMAIL_LOGIN")
