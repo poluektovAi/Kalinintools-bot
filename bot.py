@@ -15,10 +15,10 @@ from telegram.ext import (
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-ADMIN_CHAT_ID = 123456789  # <-- СЮДА ВСТАВЬ СВОЙ ID
+ADMIN_CHAT_ID = 7693224290:AAG76xDm5rEdaRZ87SzHOWzvFA_UTBc5a8I  # <-- СЮДА ВСТАВЬ СВОЙ ID
 
 # Ссылки на Google Таблицы
-STOCKS_URL = "https://docs.google.com/..."      # Остатки
+STOCKS_URL = "https://docs.google.com/spreadsheets/d/1F5a_kQVLDAI8aTGX8Bh8aFE8G6jThAXf/edit?usp=sharing&ouid=100603441846947403910&rtpof=true&sd=true"      # Остатки
 SALE_URL = "https://docs.google.com/..."        # Распродажа
 
 user_states = {}
