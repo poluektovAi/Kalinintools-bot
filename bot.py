@@ -1,3 +1,5 @@
+print("BOT FILE LOADED")
+
 import os
 from telegram import (
     Update,
@@ -127,3 +129,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+print("END OF FILE")
