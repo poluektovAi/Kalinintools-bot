@@ -18,25 +18,25 @@ from telegram.ext import (
 
 # ================= НАСТРОЙКИ =================
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")  # токен из Render
-ADMIN_CHAT_ID = 660874323  # <-- ТВОЙ Telegram user_id (ТОЛЬКО ЦИФРЫ)
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_CHAT_ID = 660874323
 
-# ================= FLASK (ДЛЯ RENDER) =================
+# ================= FLASK ДЛЯ RENDER =================
 
-app_flask = Flask(__name__)
+flask_app = Flask(__name__)
 
-@app_flask.route("/")
+@flask_app.route("/")
 def home():
     return "Bot is running"
 
 def run_flask():
-    app_flask.run(host="0.0.0.0", port=10000)
+    flask_app.run(host="0.0.0.0", port=10000)
 
 threading.Thread(target=run_flask).start()
 
-# ================= КНОПКИ =================
+# ================= МЕНЮ =================
 
-def main_menu():
+def build_menu():
     keyboard = [
         [InlineKeyboardButton("📦 Остатки", callback_data="stocks")],
         [InlineKeyboardButton("🔥 Акции", callback_data="sales")],
@@ -49,8 +49,8 @@ def main_menu():
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Добрый день! Выберите действие:",
-        reply_markup=main_menu()
+        "Привет! Выбери действие:",
+        reply_markup=build_menu()
     )
 
 async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -63,26 +63,54 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif query.data == "sales":
-        await query.message.reply_text("Акции:")
-        # пример — замени на свои file_id или URL
         await query.message.reply_photo(
             photo="https://via.placeholder.com/600x400?text=SALE"
         )
 
     elif query.data == "clearance":
         await query.message.reply_text(
-            "Распродажа:\nhttps://docs.google.com/spreadsheets/d/YYYY"
+            "Распродажа:\nhttps://docs.google.com/spreadsheets/d/YYYYYYYY"
         )
 
     elif query.data == "order":
         context.user_data["ordering"] = True
         await query.message.reply_text(
-            "Отправь заказ:\n"
+            "Отправь заказ одним сообщением:\n"
             "— текст\n"
             "— фото\n"
             "— файл\n"
-            "Можно всё вместе одним сообщением."
+            "Можно всё вместе."
         )
 
 async def handle_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.user_data.get("ordering"):
+        return
 
+    await context.bot.forward_message(
+        chat_id=ADMIN_CHAT_ID,
+        from_chat_id=update.message.chat_id,
+        message_id=update.message.message_id
+    )
+
+    await update.message.reply_text("✅ Заказ принят и отправлен в обработку.")
+    context.user_data["ordering"] = False
+
+# ================= ЗАПУСК =================
+
+def main():
+    application = Application.builder().token(BOT_TOKEN).build()
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(buttons))
+    application.add_handler(
+        MessageHandler(
+            filters.TEXT | filters.PHOTO | filters.Document.ALL,
+            handle_order
+        )
+    )
+
+    print("BOT STARTED")
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
