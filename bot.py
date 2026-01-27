@@ -69,7 +69,7 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif query.data == "clearance":
         await query.message.reply_text(
-            "Распродажа:\nhttps://docs.google.com/spreadsheets/d/YYYYYYYY"
+            "Распродажа:\nhttps://docs.google.com/spreadsheets/d/1cWHguibILTdIAd5ZOUGf1NlBde4y_jNl/edit?usp=sharing&ouid=100603441846947403910&rtpof=true&sd=true"
         )
 
     elif query.data == "order":
